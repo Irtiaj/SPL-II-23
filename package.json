@@ -1,0 +1,25 @@
+{
+  "name": "spl-ii-23",
+  "version": "1.0.0",
+  "description": "dengue-alert-system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Irtiaj/SPL-II-23.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Irtiaj/SPL-II-23/issues"
+  },
+  "homepage": "https://github.com/Irtiaj/SPL-II-23#readme",
+  "dependencies": {
+    "ejs": "^5.0.2",
+    "express": "^5.2.1"
+  }
+}
