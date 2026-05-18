@@ -7,6 +7,9 @@ const port = process.env.PORT || 3000
 
 app.use(express.json())
 
+const reportRoutes = require('./routes/reportRoutes');
+app.use('/api/reports', reportRoutes);
+
 app.get('/', (req,res) => {
     res.json({ message: "That's Dengue Alert API"})
 });
