@@ -44,4 +44,36 @@ router.post('/', async(req,res) => {
     }
 });
 
+router.patch('/:id', async(req,res) => {
+    try{
+        const { id } = req.params;
+        const { after_photo_url } = req.body;
+
+        const updateReport = await pool.query(
+            `UPDATE reports SET after_photo_url = $1, status = 'Pending Verification', updated_at = NOW()
+            WHERE report_id = $2 RETURNING *
+            `,
+            [after_photo_url,id]
+        )
+
+        if(updateReport.rowCount === 0 ){
+            return res.status(404).json({
+                success: false,
+                message: "Couldn't find the previously existing report"
+            })
+        }
+
+        res.status(200).json({
+            success: true, 
+            message: "Hazard cleanup image received", 
+            data: updateReport.rows[0]
+        })
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+});
+
 module.exports = router
