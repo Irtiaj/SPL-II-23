@@ -10,6 +10,9 @@ app.use(express.json())
 const reportRoutes = require('./routes/reportRoutes');
 app.use('/api/reports', reportRoutes);
 
+const userRoutes = require('./routes/userRoutes')
+app.use('/api/users', userRoutes)
+
 app.get('/', (req,res) => {
     res.json({ message: "That's Dengue Alert API"})
 });
