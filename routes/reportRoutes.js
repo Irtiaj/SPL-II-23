@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const pool = require('../config/db')
 const verify = require('../middleware/authmiddleware')
+const authorization = require('../middleware/rolemiddleware')
 
 router.get('/', async(req,res) =>{
     try{
@@ -45,7 +46,7 @@ router.post('/', async(req,res) => {
     }
 });
 
-router.patch('/:id', verify, async(req,res) => {
+router.patch('/:id', verify, authorization('Inspector'), async(req,res) => {
     try{
         const { id } = req.params;
         const { after_photo_url } = req.body;
@@ -76,5 +77,7 @@ router.patch('/:id', verify, async(req,res) => {
         })
     }
 });
+
+
 
 module.exports = router
