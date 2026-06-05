@@ -78,6 +78,78 @@ router.patch('/:id', verify, authorization('Inspector'), async(req,res) => {
     }
 });
 
+router.patch('/:id/assign', verify, authorization('Councillor'), async(req,res) => {
+    try{
+        const { id } = req.params 
+        const { inspector_id } = req.body
 
+        if(!inspector_id){
+            return res.status(403).json({
+                success: false,
+                message: "You must provide your ID"
+            })
+        }
+
+        const allowreport = await pool.query(
+            `UPDATE reports SET assigned_inspector_id = $1, status = 'Assigned', updated_at = NOW()
+            where report_id = $2 AND status = 'Pending' RETURNING *`, 
+            [inspector_id,id]
+        )
+
+        if(!allowreport.rowCount === 0){
+            return res.status(404).json({
+                success: false,
+                message: "No previously report found"
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Task Assigned successfully",
+            data: updateReport.rows[0]
+        })
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: "Error Occured"
+        })
+    }
+})
+
+router.patch('/:id/verify', verify, authorization('Councillor','Master Admin'), async(req,res) => {
+    try{
+        const { id } = req.params
+        const { is_approved, Councillors_note } = req.body
+
+        const newStatus = is_approved ? 'Resolved' : 'Re-assigned'
+
+        const updated_reports = await pool.query(
+            `UPDATE reports SET status = $1, updated_at = NOW()
+            WHERE reporting_id = $2 AND status = 'Pending Verification' RETURNING *`,
+            [newStatus,id]
+        );
+
+        if(updated_reports.rows === 0){
+            return res.status(404).json({
+                success: false,
+                message: "Report is not ready for verification."
+            })
+        }
+
+        const message = is_approved ? "Cleanup verified & Hazard Resolved" : "Cleanup rejected & Re-assigned the task" 
+
+        res.status(200).json({
+            success: true,
+            message,
+            data: updated_reports[0]
+        })
+
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: "Error occured while verifying the task"
+        })
+    }
+})
 
 module.exports = router
