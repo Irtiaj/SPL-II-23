@@ -1,0 +1,26 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "ward_number": 999,
+        "ward_name": "Test Ward Alpha"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [90.3750, 23.7650],
+              [90.3850, 23.7650],
+              [90.3850, 23.7750],
+              [90.3750, 23.7750],
+              [90.3750, 23.7650]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
