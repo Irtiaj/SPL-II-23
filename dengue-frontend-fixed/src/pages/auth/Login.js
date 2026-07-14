@@ -27,6 +27,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h1 className="text-xl font-bold text-center text-blue-700">Dengue Alert System</h1>
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
         {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
 

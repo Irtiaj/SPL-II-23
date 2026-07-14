@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../axios';
+import MasterAdminPanel from './MasterAdminPanel';
 
 const verifyRoles = ['Councillor', 'Master Admin'];
 
@@ -34,7 +35,7 @@ const formatDate = (dateValue) => {
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const [reports, setReports] = useState([]);
-  // CHANGED: removed longitude, latitude, before_photo_url from form state
+  
   const [form, setForm] = useState({
     description: '',
   });
@@ -212,6 +213,8 @@ const Dashboard = () => {
             Login to access role based actions. Public reports are still shown below.
           </div>
         )}
+
+        {user?.role === 'Master Admin' && <MasterAdminPanel />}
 
         {user?.role === 'Citizen' && (
           <div className="bg-white p-6 rounded shadow mb-6">
