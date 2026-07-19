@@ -9,6 +9,13 @@ router.post('/register', async(req,res) => {
     try{
         const {full_name,email,phone_number,role,password} = req.body
 
+        if(!email || !phone_number){
+            return res.status(404).json({
+                success: false,
+                message: "Either one of the email or phone number must be present."
+            })
+        }
+
         const saltRounds = 12
         const password_hash = await bcrypt.hash(password, saltRounds)
 
@@ -16,7 +23,7 @@ router.post('/register', async(req,res) => {
             `INSERT INTO users (full_name, email, phone_number, role, password_hash, created_at)
             VALUES($1,$2,$3,$4,$5,NOW())
             RETURNING user_id, full_name, email, role`,
-            [full_name,email,phone_number,role,password_hash]
+            [full_name,email || null,phone_number || null,role,password_hash]
         )
 
         res.status(201).json({
