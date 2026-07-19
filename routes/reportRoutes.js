@@ -97,7 +97,7 @@ router.patch('/:id/assign', verify, authorization('Councillor'), async(req,res) 
             [inspector_id,id]
         )
 
-        if(!allowreport.rowCount === 0){
+        if(allowreport.rowCount === 0){
             return res.status(404).json({
                 success: false,
                 message: "No previously report found"
@@ -107,7 +107,7 @@ router.patch('/:id/assign', verify, authorization('Councillor'), async(req,res) 
         res.status(200).json({
             success: true,
             message: "Task Assigned successfully",
-            data: updateReport.rows[0]
+            data: allowreport.rows[0]
         })
     }catch(error){
         res.status(500).json({
@@ -126,11 +126,11 @@ router.patch('/:id/verify', verify, authorization('Councillor','Master Admin'), 
 
         const updated_reports = await pool.query(
             `UPDATE reports SET status = $1, updated_at = NOW()
-            WHERE reporting_id = $2 AND status = 'Pending Verification' RETURNING *`,
+            WHERE report_id = $2 AND status = 'Pending Verification' RETURNING *`,
             [newStatus,id]
         );
 
-        if(updated_reports.rows === 0){
+        if(updated_reports.rowCount === 0){
             return res.status(404).json({
                 success: false,
                 message: "Report is not ready for verification."
@@ -142,7 +142,7 @@ router.patch('/:id/verify', verify, authorization('Councillor','Master Admin'), 
         res.status(200).json({
             success: true,
             message,
-            data: updated_reports[0]
+            data: updated_reports.rows[0]
         })
 
     }catch(error){

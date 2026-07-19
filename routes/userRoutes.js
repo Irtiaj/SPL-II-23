@@ -3,6 +3,9 @@ const bcrypt = require('bcrypt')
 const jsonwebtoken = require('jsonwebtoken')
 const pool = require('../config/db')
 
+const verify = require('../middleware/authmiddleware')
+const authorization = require('../middleware/rolemiddleware')
+
 const router = express.Router()
 
 router.post('/register', async(req,res) => {
