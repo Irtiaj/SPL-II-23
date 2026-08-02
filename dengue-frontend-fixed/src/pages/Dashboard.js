@@ -44,11 +44,6 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [loadingReports, setLoadingReports] = useState(false);
 
-  // Role-based routing: dedicated dashboards for Councillor and Inspector
-  // Must be after all hooks to comply with React Rules of Hooks
-  if (user?.role === 'Councillor') return <Navigate to="/councillor" replace />;
-  if (user?.role === 'Inspector') return <Navigate to="/inspector" replace />;
-
   const notify = (text, type = 'success') => {
     if (type === 'error') {
       setError(text);
@@ -80,6 +75,11 @@ const Dashboard = () => {
   useEffect(() => {
     fetchReports();
   }, []);
+
+  // Role-based routing: dedicated dashboards for Councillor and Inspector
+  // Must be after all hooks to comply with React Rules of Hooks
+  if (user?.role === 'Councillor') return <Navigate to="/councillor" replace />;
+  if (user?.role === 'Inspector') return <Navigate to="/inspector" replace />;
 
   const handleCreate = async (e) => {
     e.preventDefault();
