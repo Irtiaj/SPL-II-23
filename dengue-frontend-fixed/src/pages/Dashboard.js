@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../axios';
 
-const verifyRoles = ['Councillor', 'Master Admin'];
+const verifyRoles = ['Master Admin'];
 
 const getStatusClass = (status) => {
   switch (status) {
@@ -43,6 +43,11 @@ const Dashboard = () => {
   const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
   const [loadingReports, setLoadingReports] = useState(false);
+
+  // Role-based routing: dedicated dashboards for Councillor and Inspector
+  // Must be after all hooks to comply with React Rules of Hooks
+  if (user?.role === 'Councillor') return <Navigate to="/councillor" replace />;
+  if (user?.role === 'Inspector') return <Navigate to="/inspector" replace />;
 
   const notify = (text, type = 'success') => {
     if (type === 'error') {
