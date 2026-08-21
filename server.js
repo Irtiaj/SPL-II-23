@@ -17,6 +17,9 @@ app.use('/api/reports', reportRoutes);
 const userRoutes = require('./routes/userRoutes')
 app.use('/api/users', userRoutes)
 
+const inspectorRoutes=require('./routes/inspectorRoutes');
+app.use('/api/inspectors', inspectorRoutes);
+
 app.get('/', (req,res) => {
     res.json({ message: "That's Dengue Alert API"})
 });
