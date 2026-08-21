@@ -1,11 +1,15 @@
 const express = require('express')
 const pool = require('./config/db')
 require('dotenv').config()
+const cors = require('cors')  
 
 const app = express()
 const port = process.env.PORT || 3500
 
 app.use(express.json())
+app.use(cors({                       
+  origin: 'http://localhost:3000'
+}))
 
 const reportRoutes = require('./routes/reportRoutes');
 app.use('/api/reports', reportRoutes);
