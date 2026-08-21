@@ -95,4 +95,83 @@ router.post('/login', async(req,res) => {
     }
 })
 
+
+router.get('/staff', verify, authorization('Master Admin'), async (req, res) => {
+    try {
+        const councillors = await pool.query(
+            `SELECT u.user_id, u.full_name, u.email, u.phone_number, u.ward_id,
+                COUNT(r.report_id) AS complaints_received,
+                COUNT(r.report_id) FILTER (WHERE r.status = 'Resolved') AS complaints_resolved,
+                COUNT(r.report_id) FILTER (WHERE r.status != 'Resolved') AS complaints_pending
+             FROM users u
+             LEFT JOIN reports r ON r.ward_id = u.ward_id
+             WHERE u.role = 'Councillor'
+             GROUP BY u.user_id
+             ORDER BY u.full_name`
+        )
+
+        const inspectors = await pool.query(
+            `SELECT u.user_id, u.full_name, u.email, u.phone_number,
+                COUNT(r.report_id) FILTER (WHERE r.assigned_inspector_id = u.user_id) AS complaints_assigned,
+                COUNT(r.report_id) FILTER (WHERE r.assigned_inspector_id = u.user_id AND r.status = 'Resolved') AS complaints_resolved
+             FROM users u
+             LEFT JOIN reports r ON r.assigned_inspector_id = u.user_id
+             WHERE u.role = 'Inspector'
+             GROUP BY u.user_id
+             ORDER BY u.full_name`
+        )
+
+        res.status(200).json({
+            success: true,
+            data: {
+                councillors: councillors.rows,
+                inspectors: inspectors.rows
+            }
+        })
+    } catch (error) {
+        console.error("Error occured while fetching staff list ", error.message)
+        res.status(500).json({
+            success: false,
+            message: "Failed to get Councillor/Inspector list"
+        })
+    }
+})
+
+
+router.post('/create-staff', verify, authorization('Master Admin'), async (req, res) => {
+    try {
+        const { full_name, email, phone_number, role, password, ward_id } = req.body
+
+        if (!['Councillor', 'Inspector'].includes(role)) {
+            return res.status(400).json({
+                success: false,
+                message: "role must be either 'Councillor' or 'Inspector'"
+            })
+        }
+
+        const saltRounds = 12
+        const password_hash = await bcrypt.hash(password, saltRounds)
+
+        const newStaff = await pool.query(
+            `INSERT INTO users (full_name, email, phone_number, role, password_hash, ward_id, created_at)
+            VALUES ($1,$2,$3,$4,$5,$6,NOW())
+            RETURNING user_id, full_name, email, phone_number, role, ward_id`,
+            [full_name, email, phone_number, role, password_hash, role === 'Councillor' ? ward_id : null]
+        )
+
+        res.status(201).json({
+            success: true,
+            message: `${role} account created successfully`,
+            data: newStaff.rows[0]
+        })
+    } catch (error) {
+        console.error("Error occured while creating staff account ", error.message)
+        res.status(500).json({
+            success: false,
+            message: "Error occured while creating staff account"
+        })
+    }
+})
+
+
 module.exports = router;
